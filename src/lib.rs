@@ -205,7 +205,7 @@ impl CredentialHandler {
         let key = ssh_config::get_ssh_key(&self.ssh_key_candidates, candidate_idx)?;
         match key {
             // try first without passphrase then ask for passphrase to avoid asking for passphrase when not set
-            Some(k) => git2::Cred::ssh_key(username, None, &k, None).or_else(|_| {
+            Some(k) => {
                 let passphrase = self
                     .ui
                     .ask_ssh_passphrase(&format!(
@@ -215,7 +215,7 @@ impl CredentialHandler {
                     .ok()
                     .filter(|v| !v.is_empty());
                 git2::Cred::ssh_key(username, None, &k, passphrase.as_deref())
-            }),
+            }
             None => Err(git2::Error::from_str(
                 "failed authentication for repository",
             )),
